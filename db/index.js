@@ -1,7 +1,11 @@
 // Require the Client constructor from the pg package
+// const pg = require('pg');
 
 // Create a constant, CONNECTION_STRING, from either process.env.DATABASE_URL or postgres://localhost:5432/phenomena-dev
-
+const { Client } = require('pg');
+const client = new Client('postgres://localhost:5432/phenomena-dev');
+// const CONNECTION_STRING = new pg.Client('postgres://localhost:5432/phenomena-dev');
+// client.connect();
 // Create the client using new Client(CONNECTION_STRING)
 // Do not connect to the client in this file!
 
@@ -19,6 +23,10 @@
  */
 async function getOpenReports() {
   try {
+      const { rows } = await client.query(`
+      SELECT * 
+      FROM reports
+      WHERE "isOpen" = 't'`);
     // first load all of the reports which are open
     
 
@@ -90,11 +98,15 @@ async function createReport(reportFields) {
 async function _getReport(reportId) {
   try {
     // SELECT the report with id equal to reportId
+      const { rows:[report] } = await client.query(`
+      SELECT *
+      FROM reports
+      WHERE "id" = $'reportID';
+      `)
     
 
-    // return the report
-    
-
+    // return the report 
+return report 
   } catch (error) {
     throw error;
   }
