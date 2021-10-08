@@ -21,8 +21,8 @@ const {
 apiRouter.get('/reports', async (req, res) => {
     try {
         const theReports = await getOpenReports();
-
-        res.send({reports: theReports})
+        
+        res.send({reports: reportGet})
         
     } catch (error) {
         next(error)
@@ -39,7 +39,6 @@ apiRouter.get('/reports', async (req, res) => {
  * - on caught error, call next(error)
  */
 apiRouter.post('/reports', async (req, res, next) => {
-   
    const { title, location, description, password } = req.body;
 
 
@@ -53,7 +52,7 @@ apiRouter.post('/reports', async (req, res, next) => {
 
         const report = await createReport(reportData);
 
-        res.send( report);
+        res.send(report);
 
     } catch (error) {
         next(error)

@@ -3,7 +3,7 @@
 
 // Create a constant, CONNECTION_STRING, from either process.env.DATABASE_URL or postgres://localhost:5432/phenomena-dev
 const { Client } = require('pg');
-const client = new Client('postgres://localhost:5432/phenomena-dev');
+const client = new Client(process.env.DATABASE_URL || 'postgres://localhost:5432/phenomena-dev');
 // const CONNECTION_STRING = new pg.Client('postgres://localhost:5432/phenomena-dev');
 // client.connect();
 // Create the client using new Client(CONNECTION_STRING)
@@ -23,11 +23,11 @@ const client = new Client('postgres://localhost:5432/phenomena-dev');
  */
 async function getOpenReports() {
   try {
-      const { rows } = await client.query(`
+      const { rows: reports } = await client.query(`
       SELECT * 
       FROM reports
-      WHERE "isOpen" = 't'
-      `);
+      WHERE "isOpen" = true;
+      `)
     // first load all of the reports which are open
     
 
@@ -54,10 +54,8 @@ async function getOpenReports() {
     delete report.password
   })
 
+// finally, return the reports
   return reports;
-
-
-    // finally, return the reports
   
 
   } catch (error) {
@@ -82,6 +80,7 @@ async function createReport(reportFields) {
 
 
   try {
+
     const { rows: [report] } = await client.query(`
       INSERT INTO reports(title, location, description, password)
       VALUES($1, $2, $3, $4)
@@ -118,15 +117,15 @@ async function createReport(reportFields) {
 async function _getReport(reportId) {
   try {
     // SELECT the report with id equal to reportId
-      const { rows: [report]} = await client.query(`
+      const {rows: [report]} = await client.query(`
       SELECT *
       FROM reports
       WHERE "id" = $'reportID';
-      `)
+      `);
     
 
     // return the report 
-return report;
+        return report;
 
   } catch (error) {
     throw error;
@@ -166,7 +165,7 @@ async function closeReport(reportId, password) {
        `)
     }
 
-    return {message: "Report closed!"}
+    return {message: "Report successfully closed!"}
     
 
   } catch (error) {
@@ -190,14 +189,6 @@ async function createReportComment(reportId, commentFields) {
   const { content } = commentFields;
 
   try {
-    // grab the report we are going to be commenting on
-    // if it wasn't found, throw an error saying so
-    // if it is not open, throw an error saying so
-    // if the current date is past the expiration, throw an error saying so
-    // you can use Date.parse(report.expirationDate) < new Date() to check
-    // all go: insert a comment
-    // then update the expiration date to a day from now
-    // finally, return the comment
 
     const report = await _getReport(reportId);
   
@@ -244,5 +235,3 @@ module.exports = {
   closeReport,
   createReportComment
 }
-
-// export the client and all database functions below
