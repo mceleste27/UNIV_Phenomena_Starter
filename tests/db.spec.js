@@ -1,7 +1,7 @@
 require('dotenv').config();
 
-const { rebuildDB, testDB } = require('../db/seed_data');
-const { client, createReport, getOpenReports, _getReport, closeReport, createReportComment } = require('../db');
+import { rebuildDB, testDB } from '../db/seed_data';
+import { client, createReport, getOpenReports, _getReport, closeReport } from '../db';
 
 let reportIdToCreate, reportIdToClose;
 describe('Database', () => {
