@@ -120,7 +120,7 @@ async function _getReport(reportId) {
       const {rows: [report]} = await client.query(`
       SELECT *
       FROM reports
-      WHERE "id" = $'reportID';
+      WHERE "id" = ${reportId};
       `);
     
 
